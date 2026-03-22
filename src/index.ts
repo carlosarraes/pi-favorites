@@ -4,7 +4,7 @@ import { join, dirname } from "node:path";
 import type { Model } from "@mariozechner/pi-ai";
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
 import { DynamicBorder } from "@mariozechner/pi-coding-agent";
-import { Container, Input, Spacer, Text, fuzzyFilter, getEditorKeybindings, Key } from "@mariozechner/pi-tui";
+import { Container, Input, Spacer, Text, fuzzyFilter, getKeybindings, Key } from "@mariozechner/pi-tui";
 
 interface FavoriteEntry {
 	provider: string;
@@ -117,7 +117,7 @@ export default function (pi: ExtensionAPI) {
 			let allItems = buildItems();
 			let filteredItems = allItems;
 			let selectedIndex = 0;
-			const kb = getEditorKeybindings();
+			const kb = getKeybindings();
 
 			const container = new Container();
 			container.addChild(new DynamicBorder((s: string) => theme.fg("accent", s)));
@@ -180,20 +180,20 @@ export default function (pi: ExtensionAPI) {
 				render(width: number) { return container.render(width); },
 				invalidate() { container.invalidate(); },
 				handleInput(data: string) {
-					if (kb.matches(data, "selectUp")) {
+					if (kb.matches(data, "tui.select.up")) {
 						if (filteredItems.length === 0) return;
 						selectedIndex = selectedIndex === 0 ? filteredItems.length - 1 : selectedIndex - 1;
 						updateList();
-					} else if (kb.matches(data, "selectDown")) {
+					} else if (kb.matches(data, "tui.select.down")) {
 						if (filteredItems.length === 0) return;
 						selectedIndex = selectedIndex === filteredItems.length - 1 ? 0 : selectedIndex + 1;
 						updateList();
-					} else if (kb.matches(data, "selectConfirm")) {
+					} else if (kb.matches(data, "tui.select.confirm")) {
 						const selected = filteredItems[selectedIndex];
 						if (selected) done(selected.model);
-					} else if (kb.matches(data, "selectCancel")) {
+					} else if (kb.matches(data, "tui.select.cancel")) {
 						done(null);
-					} else if (kb.matches(data, "tab")) {
+					} else if (kb.matches(data, "tui.input.tab")) {
 						const selected = filteredItems[selectedIndex];
 						if (selected) {
 							toggleFavorite(selected.provider, selected.id);
@@ -221,7 +221,7 @@ export default function (pi: ExtensionAPI) {
 		}
 	}
 
-	pi.registerShortcut(Key.ctrl("x"), {
+	pi.registerShortcut(Key.ctrl("f"), {
 		description: "Cycle favorite models",
 		handler: async (ctx) => { await cycleFavorites(ctx); },
 	});
