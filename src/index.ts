@@ -61,25 +61,27 @@ export default function (pi: ExtensionAPI) {
 		}
 
 		const current = ctx.model;
-		let nextIdx = 0;
+		let startIdx = 0;
 		if (current) {
 			const curIdx = favorites.findIndex((f) => f.provider === current.provider && f.modelId === current.id);
-			nextIdx = curIdx === -1 ? 0 : (curIdx + 1) % favorites.length;
+			startIdx = curIdx === -1 ? 0 : (curIdx + 1) % favorites.length;
 		}
 
-		const next = favorites[nextIdx];
-		const model = ctx.modelRegistry.find(next.provider, next.modelId);
-		if (!model) {
-			ctx.ui.notify(`Not available: (${next.provider}) ${next.modelId}`, "error");
+		for (let i = 0; i < favorites.length; i++) {
+			const next = favorites[(startIdx + i) % favorites.length];
+			const model = ctx.modelRegistry.find(next.provider, next.modelId);
+			if (!model) continue;
+
+			const ok = await pi.setModel(model);
+			if (ok) {
+				ctx.ui.notify(`(${next.provider}) ${next.modelId}`, "info");
+			} else {
+				ctx.ui.notify(`No API key: (${next.provider}) ${next.modelId}`, "error");
+			}
 			return;
 		}
 
-		const ok = await pi.setModel(model);
-		if (ok) {
-			ctx.ui.notify(`(${next.provider}) ${next.modelId}`, "info");
-		} else {
-			ctx.ui.notify(`No API key: (${next.provider}) ${next.modelId}`, "error");
-		}
+		ctx.ui.notify("No favorites are currently available", "warning");
 	}
 
 	async function showPicker(ctx: ExtensionContext): Promise<void> {
