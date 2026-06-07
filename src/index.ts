@@ -1,10 +1,10 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, dirname } from "node:path";
-import type { Model } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { DynamicBorder } from "@mariozechner/pi-coding-agent";
-import { Container, Input, Spacer, Text, fuzzyFilter, getKeybindings, Key } from "@mariozechner/pi-tui";
+import type { Model } from "@earendil-works/pi-ai";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { DynamicBorder } from "@earendil-works/pi-coding-agent";
+import { Container, Input, Spacer, Text, fuzzyFilter, getKeybindings, Key } from "@earendil-works/pi-tui";
 
 interface FavoriteEntry {
 	provider: string;
